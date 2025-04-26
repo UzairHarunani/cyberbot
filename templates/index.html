@@ -1,19 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>CyberBot - Stop Cyberbullying</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>Cyberbullying Awareness - CyberBot</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/exhibition_logo.webp">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            height: 100vh;
+            background-color: #e0f7fa;
+        }
+        h2 {
+            color: #006064;
+        }
+        .upper {
+            display: flex;
+            height: 50%;
+        }
+        .half {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .lower {
+            height: 50%;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f3f7fb;
+        }
+        .chatbox, .simbox {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+             max-height: 300px; /* Optional cap for full chat area */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chatlog {
+              height: 125px;         /* Set a fixed height */
+              max-height: 125px;     /* Prevent it from growing */
+              overflow-y: auto;
+              background: #fff8e1;
+              padding: 10px;
+              margin-top: 10px;
+              border: 1px solid #ddd;
+              border-radius: 10px;
+              display: flex;
+              flex-direction: column;
+
+        }
+        .simulatedLog {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            overflow-y: auto;
+            background: #fff8e1;
+            display: flex;
+            flex-direction: column;
+        }
+        .typing-indicator {
+            font-style: italic;
+            color: gray;
+            margin-top: 10px;
+        }
+        .warning {
+            background: #ffe5e5;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            color: red;
+            display: none;
+        }
+        .quiz button {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .bot-label {
+            color: #00838f;
+            font-weight: bold;
+        }
+        .alex-msg { color: #33691e; }
+        .jordan-msg { color: #b71c1c; font-weight: bold; }
+    </style>
 </head>
 <body>
-  <h1>🤖 Meet CyberBot</h1>
-  
-  <div class="chatbox">
-    <input type="text" id="userInput" placeholder="Ask CyberBot anything about cyberbullying..." />
-    <button onclick="sendMessage()">Send</button>
-    <div id="chatlog" class="chatlog"></div>
-  </div>
+<div class="header">
+  <img src="/static/exhibition_logo.webp" alt="CyberBullying Logo" class="header-logo" />
+  <h3 class="header-title">CYBERBULLYING</h3>
+  <div class="header-names">Amaal, Nirali and Uzair</div>
+</div>
 
-  <script src="/static/script.js"></script>
+    <div class="upper">
+        <div class="half">
+          <h2>🤖 Meet CyberBot</h2>
+          <div class="chatbox">
+            <div id="chatlog" class="chatlog"></div>
+
+            <div class="chat-input">
+              <input type="text" id="userInput" placeholder="Ask CyberBot anything about cyberbullying..." />
+              <button onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="half">
+            <h2>💢 Chat Simulation</h2>
+            <div class="simbox">
+                <div id="simulatedLog" class="simulatedLog"></div>
+                <div class="warning" id="bullyWarning">
+                    ⚠️ This is an example of cyberbullying. Always be kind online.
+                    <button onclick="replaySimulation()" style="margin-left: 10px" >Replay</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div>
+    <hr class="thick-line">
+    </div>
+    <div class="lower">
+        <h2>🧠 Quiz: What Do You Know About Cyberbullying?</h2>
+        <div class="quiz">
+            <p>1. What is cyberbullying?</p>
+            <button onclick="checkAnswer(this, true)">A. Repeatedly posting content about someone online that they might not approve of, even if you think it's harmless</button>
+            <button onclick="checkAnswer(this, false)">B. Playfully teasing friends online in group chats, especially if they don’t complain</button>
+            <button onclick="checkAnswer(this, false)">C. Making fun of someone online only once, but in front of a large audience</button>
+            <button onclick="checkAnswer(this, false)">D. Sending multiple direct messages with jokes that could be interpreted as rude depending on the context</button>
+
+            <p>2. What should you do if you see someone being cyberbullied?</p>
+            <button onclick="checkAnswer(this, false)">A. Quietly message the bully to let them know you disapprove, but avoid getting involved publicly</button>
+            <button onclick="checkAnswer(this, false)">B. Privately message the victim telling them to ignore it and move on</button>
+            <button onclick="checkAnswer(this, false)">C. Screenshot the situation for “evidence” but take no further action unless someone asks</button>
+            <button onclick="checkAnswer(this, true)">D. Report the situation to a trusted adult or authority and offer emotional support to the victim</button>
+
+            <p>3. Why is cyberbullying harmful?</p>
+            <button onclick="checkAnswer(this, false)">A. Because it may unintentionally teach victims to be emotionally tougher in the long run</button>
+            <button onclick="checkAnswer(this, true)">B. It can lead to serious emotional distress, especially when the victim feels like there’s no escape</button>
+            <button onclick="checkAnswer(this, false)">C. Because being online too much is already bad for mental health</button>
+            <button onclick="checkAnswer(this, false)">D. It's not much worse than traditional bullying since people can just log off</button>
+
+            <p>4. Who can be affected by cyberbullying?</p>
+            <button onclick="checkAnswer(this, false)">A. Mostly younger users who share too much personal information</button>
+            <button onclick="checkAnswer(this, false)">B. People who are already insecure or socially isolated</button>
+            <button onclick="checkAnswer(this, true)">C. Technically, anyone online—even those who don’t engage in conflict</button>
+            <button onclick="checkAnswer(this, false)">D. Only users with large followings who attract public attention</button>
+
+            <p>5. What's a good way to stop a cyberbully?</p>
+            <button onclick="checkAnswer(this, false)">A. Post a “clapback” that exposes the bully in a clever or humorous way</button>
+            <button onclick="checkAnswer(this, false)">B. Ignore their comments publicly while quietly monitoring them for escalation</button>
+            <button onclick="checkAnswer(this, true)">C. Immediately block and report the bully using the platform’s tools, and encourage others to do the same</button>
+            <button onclick="checkAnswer(this, false)">D. Start your own post explaining why bullying is bad and tag them as a lesson</button>
+
+            <p>6. Is it okay to laugh at someone online?</p>
+            <button onclick="checkAnswer(this, false)">A. If you don’t know the person personally and it's a public meme, it’s usually fine</button>
+            <button onclick="checkAnswer(this, false)">B. Only if you believe the person wouldn’t take it seriously or won’t see it</button>
+            <button onclick="checkAnswer(this, false)">C. It depends—sometimes it’s part of internet culture and people expect it</button>
+            <button onclick="checkAnswer(this, true)">D. No, because it can contribute to humiliation, regardless of your intent or their awareness</button>
+        </div>
+    </div>
+
+    <div class="qr-float">
+  <img src="/static/qrcode.png" alt="QR Code" title="Scan to view on your phone!" />
+</div>
+
+    <script>
+
+        function sendMessage() {
+            const input = document.getElementById("userInput").value;
+            if (!input.trim()) return;
+
+            const chatlog = document.getElementById("chatlog");
+
+            const userDiv = document.createElement("div");
+            userDiv.innerHTML = `<strong>You:</strong> ${input}`;
+
+            const typingDiv = document.createElement("div");
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing';
+            typingDiv.textContent = 'CyberBot is typing...';
+            chatlog.insertBefore(typingDiv, chatlog.firstChild);
+            chatlog.insertBefore(userDiv, chatlog.firstChild);
+
+            fetch("/chatbot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let i = 0;
+                let text = data.response;
+                typingDiv.textContent = 'CyberBot: ';
+
+                const typeInterval = setInterval(() => {
+                    if (i < text.length) {
+                        typingDiv.textContent += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(typeInterval);
+                        typingDiv.remove();
+                    const botDiv = document.createElement("div");
+                    botDiv.innerHTML = `<span class='bot-label'>CyberBot:</span> ${text}`;
+                    chatlog.insertBefore(botDiv, chatlog.firstChild);
+                    chatlog.insertBefore(userDiv, chatlog.firstChild);
+                    }
+                }, 40);
+            });
+
+            document.getElementById("userInput").value = "";
+        document.getElementById("userInput").focus();
+        }
+
+        function checkAnswer(button, isCorrect) {
+            if (isCorrect) {
+                button.style.backgroundColor = "lightgreen";
+                button.textContent += " ✅";
+            } else {
+                button.style.backgroundColor = "#f99";
+                button.textContent += " ❌";
+            }
+        }
+
+        function simulateChat() {
+            const messages = [
+                "Alex: Hey Jordan, want to play a game later?",
+                "Jordan: No one wants to play with you. You're terrible at everything.",
+                "Alex: That’s not nice. I just wanted to have fun.",
+                "Jordan: Seriously, just go away. Nobody likes you.",
+                "Alex: I feel hurt when you say things like that...",
+                "Jordan: Whatever. You're just a crybaby."
+            ];
+
+            const log = document.getElementById("simulatedLog");
+            const warning = document.getElementById("bullyWarning");
+
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i >= messages.length) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                const div = document.createElement("div");
+                div.textContent = messages[i];
+                if (messages[i].startsWith("Jordan:")) {
+                    div.classList.add("jordan-msg");
+                    if (/\b(stupid|loser|ugly|quit|hate|dumb|worthless|crybaby)\b/i.test(messages[i])) {
+                        warning.style.display = "block";
+                    }
+                } else {
+                    div.classList.add("alex-msg");
+                }
+
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+                i++;
+            }, 2000);
+        }
+
+        window.onload = () => {
+            simulateChat();
+            document.getElementById("userInput").addEventListener("keypress", function(e) {
+                if (e.key === "Enter") {
+                    sendMessage();
+                }
+            });
+        };
+
+        function replaySimulation() {
+            const log = document.getElementById("simulatedLog");
+            const warning = document.getElementById("bullyWarning");
+            log.innerHTML = "";
+            warning.style.display = "none";
+            simulateChat();
+        }
+    </script>
 </body>
 </html>
