@@ -17,12 +17,13 @@ def chatbot():
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are CyberBot, a friendly chatbot that helps kids understand and deal with cyberbullying."},
-                {"role": "user", "content": user_message}
-            ]
-        )
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are CyberBot, a friendly chatbot helping kids understand and deal with cyberbullying."},
+        {"role": "user", "content": user_message}
+    ]
+)
+
         reply = response['choices'][0]['message']['content']
         return jsonify({"response": reply})
     except Exception as e:
