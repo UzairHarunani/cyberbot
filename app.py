@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, jsonify
 import openai
 import os
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# Load API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Insert your new API key here
+openai.api_key = "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"
 
 @app.route("/")
 def home():
@@ -14,20 +14,20 @@ def home():
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
     user_message = request.json.get("message")
-
+    
     try:
         response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "system", "content": "You are CyberBot, a friendly chatbot helping kids understand and deal with cyberbullying."},
-        {"role": "user", "content": user_message}
-    ]
-)
-
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful Cyberbullying Awareness Bot for children."},
+                {"role": "user", "content": user_message}
+            ]
+        )
         reply = response['choices'][0]['message']['content']
-        return jsonify({"response": reply})
+        return jsonify({"reply": reply})
+    
     except Exception as e:
-        return jsonify({"response": "Sorry, I'm having trouble answering right now."})
+        return jsonify({"reply": "Sorry, I am having trouble answering right now."})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
+    app.run(debug=True)
