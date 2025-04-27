@@ -1,25 +1,27 @@
 async function sendMessage() {
   const input = document.getElementById("userInput");
-  const message = input.value;
-  if (!message.trim()) return;
+  const msg = input.value;
+  if (!msg.trim()) return;
 
-  appendToChat("You", message);
+  appendToChat("You", msg);
   input.value = "";
 
-  const res = await fetch("/chatbot", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: message })
-  });
-
-  const data = await res.json();
-  appendToChat("CyberBot", data.response);
+  try {
+    const res = await fetch("/chatbot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    appendToChat("CyberBot", data.reply);
+  } catch (error) {
+    appendToChat("CyberBot", "Oops, something went wrong.");
+  }
 }
 
-function appendToChat(sender, text) {
+function appendToChat(sender, message) {
   const log = document.getElementById("chatlog");
-  const msg = document.createElement("p");
-  msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-  log.appendChild(msg);
-  log.scrollTop = log.scrollHeight;
+  const entry = document.createElement("div");
+  entry.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  log.appendChild(entry);
 }
