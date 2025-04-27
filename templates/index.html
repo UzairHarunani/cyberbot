@@ -196,7 +196,7 @@
             .then(res => res.json())
             .then(data => {
                 let i = 0;
-                let text = data.response;
+                let text = data.reply;
                 typingDiv.textContent = 'CyberBot: ';
 
                 const typeInterval = setInterval(() => {
