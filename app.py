@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # Insert your new API key directly here
-openai.api_key = "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"
+openai.api_key = "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"
 
 @app.route("/")
 def home():
