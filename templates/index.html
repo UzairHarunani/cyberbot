@@ -170,117 +170,129 @@
   <img src="/static/qrcode.png" alt="QR Code" title="Scan to view on your phone!" />
 </div>
 
-    <script>
+<script>
+function sendMessage() {
+  const input = document.getElementById("userInput").value.trim();
+  if (!input) return;
 
-        function sendMessage() {
-            const input = document.getElementById("userInput").value;
-            if (!input.trim()) return;
+  const chatlog = document.getElementById("chatlog");
 
-            const chatlog = document.getElementById("chatlog");
+  const userDiv = document.createElement("div");
+  userDiv.innerHTML = `<strong>You:</strong> ${input}`;
 
-            const userDiv = document.createElement("div");
-            userDiv.innerHTML = `<strong>You:</strong> ${input}`;
+  const typingDiv = document.createElement("div");
+  typingDiv.className = 'typing-indicator';
+  typingDiv.id = 'typing';
+  typingDiv.textContent = 'CyberBot is typing...';
+  chatlog.insertBefore(typingDiv, chatlog.firstChild);
+  chatlog.insertBefore(userDiv, chatlog.firstChild);
 
-            const typingDiv = document.createElement("div");
-            typingDiv.className = 'typing-indicator';
-            typingDiv.id = 'typing';
-            typingDiv.textContent = 'CyberBot is typing...';
-            chatlog.insertBefore(typingDiv, chatlog.firstChild);
-            chatlog.insertBefore(userDiv, chatlog.firstChild);
+  fetch("/chatbot", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: input })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data || !data.response) {
+      typingDiv.textContent = "CyberBot: Sorry, I couldn’t get a response. Try again.";
+      return;
+    }
 
-            fetch("/chatbot", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: input })
-            })
-            .then(res => res.json())
-            .then(data => {
-                let i = 0;
-                let text = data.reply;
-                typingDiv.textContent = 'CyberBot: ';
+    let i = 0;
+    let text = data.response;
+    typingDiv.textContent = 'CyberBot: ';
 
-                const typeInterval = setInterval(() => {
-                    if (i < text.length) {
-                        typingDiv.textContent += text.charAt(i);
-                        i++;
-                    } else {
-                        clearInterval(typeInterval);
-                        typingDiv.remove();
-                    const botDiv = document.createElement("div");
-                    botDiv.innerHTML = `<span class='bot-label'>CyberBot:</span> ${text}`;
-                    chatlog.insertBefore(botDiv, chatlog.firstChild);
-                    chatlog.insertBefore(userDiv, chatlog.firstChild);
-                    }
-                }, 40);
-            });
+    const typeInterval = setInterval(() => {
+      if (i < text.length) {
+        typingDiv.textContent += text.charAt(i);
+        i++;
+      } else {
+        clearInterval(typeInterval);
+        typingDiv.remove();
+        const botDiv = document.createElement("div");
+        botDiv.innerHTML = `<span class='bot-label'>CyberBot:</span> ${text}`;
+        chatlog.insertBefore(botDiv, chatlog.firstChild);
+        chatlog.insertBefore(userDiv, chatlog.firstChild);
+        smoothScrollToTop(chatlog);
+      }
+    }, 40);
+  });
 
-            document.getElementById("userInput").value = "";
-        document.getElementById("userInput").focus();
-        }
+  document.getElementById("userInput").value = "";
+  document.getElementById("userInput").focus();
+}
 
-        function checkAnswer(button, isCorrect) {
-            if (isCorrect) {
-                button.style.backgroundColor = "lightgreen";
-                button.textContent += " ✅";
-            } else {
-                button.style.backgroundColor = "#f99";
-                button.textContent += " ❌";
-            }
-        }
+function smoothScrollToTop(element) {
+  element.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
 
-        function simulateChat() {
-            const messages = [
-                "Alex: Hey Jordan, want to play a game later?",
-                "Jordan: No one wants to play with you. You're terrible at everything.",
-                "Alex: That’s not nice. I just wanted to have fun.",
-                "Jordan: Seriously, just go away. Nobody likes you.",
-                "Alex: I feel hurt when you say things like that...",
-                "Jordan: Whatever. You're just a crybaby."
-            ];
+function checkAnswer(button, isCorrect) {
+  if (isCorrect) {
+    button.style.backgroundColor = "lightgreen";
+    button.textContent += " ✅";
+  } else {
+    button.style.backgroundColor = "#f99";
+    button.textContent += " ❌";
+  }
+}
 
-            const log = document.getElementById("simulatedLog");
-            const warning = document.getElementById("bullyWarning");
+function simulateChat() {
+  const messages = [
+    "Alex: Hey Jordan, want to play a game later?",
+    "Jordan: No one wants to play with you. You're terrible at everything.",
+    "Alex: That’s not nice. I just wanted to have fun.",
+    "Jordan: Seriously, just go away. Nobody likes you.",
+    "Alex: I feel hurt when you say things like that...",
+    "Jordan: Whatever. You're just a crybaby."
+  ];
 
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i >= messages.length) {
-                    clearInterval(interval);
-                    return;
-                }
+  const log = document.getElementById("simulatedLog");
+  const warning = document.getElementById("bullyWarning");
 
-                const div = document.createElement("div");
-                div.textContent = messages[i];
-                if (messages[i].startsWith("Jordan:")) {
-                    div.classList.add("jordan-msg");
-                    if (/\b(stupid|loser|ugly|quit|hate|dumb|worthless|crybaby)\b/i.test(messages[i])) {
-                        warning.style.display = "block";
-                    }
-                } else {
-                    div.classList.add("alex-msg");
-                }
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i >= messages.length) {
+      clearInterval(interval);
+      return;
+    }
 
-                log.appendChild(div);
-                log.scrollTop = log.scrollHeight;
-                i++;
-            }, 2000);
-        }
+    const div = document.createElement("div");
+    div.textContent = messages[i];
+    if (messages[i].startsWith("Jordan:")) {
+      div.classList.add("jordan-msg");
+      if (/\b(stupid|loser|ugly|quit|hate|dumb|worthless|crybaby)\b/i.test(messages[i])) {
+        warning.style.display = "block";
+      }
+    } else {
+      div.classList.add("alex-msg");
+    }
 
-        window.onload = () => {
-            simulateChat();
-            document.getElementById("userInput").addEventListener("keypress", function(e) {
-                if (e.key === "Enter") {
-                    sendMessage();
-                }
-            });
-        };
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    i++;
+  }, 2000);
+}
 
-        function replaySimulation() {
-            const log = document.getElementById("simulatedLog");
-            const warning = document.getElementById("bullyWarning");
-            log.innerHTML = "";
-            warning.style.display = "none";
-            simulateChat();
-        }
-    </script>
+function replaySimulation() {
+  const log = document.getElementById("simulatedLog");
+  const warning = document.getElementById("bullyWarning");
+  log.innerHTML = "";
+  warning.style.display = "none";
+  simulateChat();
+}
+
+window.onload = () => {
+  simulateChat();
+  document.getElementById("userInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  });
+};
+</script>
 </body>
 </html>
